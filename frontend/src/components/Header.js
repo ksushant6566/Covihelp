@@ -4,21 +4,31 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Link as RouterLink } from "react-router-dom";
 import UserServiceApi from "../api/UserServiceApi";
 import uuid from "react-uuid";
+import { headersData, LoggedInHeader, staffHeader } from "../util/HeaderItems";
+import { logoutUser } from "../features/authentication/auth";
+import { useDispatch } from "react-redux";
+import { isUserLoggedIn, getUserType } from "../features/authentication/auth";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles({
   header: {
-    backgroundColor: "#400CCC",
+    backgroundColor: "white",
+    boxShadow: "none",
     paddingRight: "79px",
-    paddingLeft: "118px",
+    color: "rgb(0,51,102)",
+    width: "100vw",
   },
   logo: {
     fontFamily: "Work Sans, sans-serif",
     fontWeight: 600,
-    color: "#FFFEFE",
-    textAlign: "left",
+    color: "rgb(0,51,102)",
+    fontSize: "25px",
+    position: "relative",
+    left: "55px",
   },
   toolbar: {
     display: "flex",
+
     justifyContent: "space-between",
   },
   menuButton: {
@@ -29,119 +39,31 @@ const useStyles = makeStyles({
   },
 });
 
-const headersData = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "Locations",
-    href: "/locations",
-  },
-  {
-    label: "Sign Up",
-    href: "/signup",
-  },
-  {
-    label: "Log in",
-    href: "/login",
-  },
-];
-const LoggedInHeader = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "Locations",
-    href: "/locations",
-  },
-  {
-    label: "my profile",
-    href: "/myprofile",
-  },
-  {
-    label: "my bookings",
-    href: "/mybookings",
-  },
-  {
-    label: "dashboard",
-    href: "/dashboard",
-  },
-  {
-    label: "Log Out",
-    href: "/",
-  },
-];
-const staffHeader = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "Locations",
-    href: "/locations",
-  },
-  {
-    label: "Staff Dashboard",
-    href: "/staff",
-  },
-  {
-    label: "Log Out",
-    href: "/",
-  },
-];
-
 function Header() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const checkLoggedIn = useSelector(isUserLoggedIn);
+  const usertype = useSelector(getUserType);
+  const isUserDriver = true; /////
+  const handleLogout = async () => {
+    localStorage.removeItem("token");
+    await dispatch(logoutUser());
+  };
   //   const isUserLoggedIn = UserServiceApi.isUserLoggedIn();
   //   const isUserStaff = UserServiceApi.isUserStaff();
-  const isUserLoggedIn = true;
-  const isUserStaff = true;
+  const isLoggedIn = checkLoggedIn;
+  const isUserStaff = usertype === "Admin" ? true : false;
   const displayDesktop = () => {
     return (
       <Toolbar className={classes.toolbar}>
         {covidHelp}
         <div>
-          {!isUserLoggedIn && getMenuButtons()}
-          {isUserLoggedIn && (
+          {!isLoggedIn && getMenuButtons(headersData)}
+          {isLoggedIn && (
             <>
-              {!isUserStaff &&
-                LoggedInHeader.map(({ label, href }) => {
-                  return (
-                    <Button
-                      {...{
-                        key: label,
-                        color: "inherit",
-                        to: href,
-                        component: RouterLink,
-                        className: classes.menuButton,
-                      }}
-                    >
-                      {label}
-                    </Button>
-                  );
-                })}
-            </>
-          )}
-          {isUserLoggedIn && (
-            <>
-              {isUserStaff &&
-                staffHeader.map(({ label, href }) => {
-                  return (
-                    <Button
-                      {...{
-                        key: label,
-                        color: "inherit",
-                        to: href,
-                        component: RouterLink,
-                        className: classes.menuButton,
-                      }}
-                    >
-                      {label}
-                    </Button>
-                  );
-                })}
+              {isUserStaff
+                ? getMenuButtons(staffHeader)
+                : getMenuButtons(LoggedInHeader)}
             </>
           )}
         </div>
@@ -154,8 +76,8 @@ function Header() {
     </Typography>
   );
 
-  const getMenuButtons = () => {
-    return headersData.map(({ label, href }) => {
+  const getMenuButtons = (menuItems) => {
+    return menuItems.map(({ label, href }) => {
       return (
         <Button
           {...{
@@ -165,6 +87,7 @@ function Header() {
             component: RouterLink,
             className: classes.menuButton,
           }}
+          onClick={label === "Log Out" ? handleLogout : null}
         >
           {label}
         </Button>
