@@ -35,4 +35,9 @@ app.use('/api/users', require('./routes/users'))
 app.use('/api/ambulances',require('./routes/ambulance'))
 app.use('/api/bookings', require('./routes/bookings'))
 
+app.use(express.static(path.join(__dirname, '../frontend/build')))
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build'))
+})
+
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
