@@ -3,7 +3,7 @@ import axios from "axios";
 import { clustersDbscan, point, distance } from "@turf/turf";
 
 const api_url =
-  process.env.server_url || "http://localhost:8000/api/ambulances";
+  process.env.server_url || "https://covihelp-india.herokuapp.com/api/ambulances";
 
 class LocationServiceApi {
   getAllLocations() {

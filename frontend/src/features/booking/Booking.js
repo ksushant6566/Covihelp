@@ -12,7 +12,7 @@ const initialState = {
   status: "pending",
 };
 
-const createurl = "http://localhost:8000/api/bookings/createBooking";
+const createurl = "https://covihelp-india.herokuapp.com/api/bookings/createBooking";
 export const createbooking = createAsyncThunk(
   "booking/createbooking",
   async (

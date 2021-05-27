@@ -4,7 +4,7 @@ import jwt_decode from "jwt-decode";
 // for user JWT storage
 export const TOKEN_SESSION_ATTRIBUTE_NAME = "token";
 export const TOKEN_HEADER_LENGTH = 7;
-const userUrl = "http://localhost:8000/api/users/";
+const userUrl = "https://covihelp-india.herokuapp.com/api/users/";
 class UserServiceApi {
   getUserToken() {
     let token = localStorage.getItem(TOKEN_SESSION_ATTRIBUTE_NAME);
