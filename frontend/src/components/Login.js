@@ -9,10 +9,19 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+import { useDispatch } from "react-redux";
+import { login } from "../features/authentication/auth";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import { Alert } from "@material-ui/lab";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: "140px",
+    marginTop: "120px",
+    backgroundColor: "white",
   },
   paper: {
     marginTop: theme.spacing(8),
@@ -31,17 +40,41 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  formControl: {
+    width: "100%",
+    marginTop: theme.spacing(1),
+  },
 }));
 
 export default function LogIn() {
+  const history = useHistory();
   const classes = useStyles();
-  const [formState, setFormState] = useState({ email: "", password: "" });
+  const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [formState, setFormState] = useState({
+    email: "",
+    password: "",
+    usertype: "",
+  });
   const handleChange = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formState);
+    const res = await dispatch(login(formState));
+    if (res.type === "auth/login/fulfilled") {
+      console.log(res.payload);
+      setFormState({
+        email: "",
+        password: "",
+        usertype: "",
+      });
+      history.push("/");
+    } else {
+      setErrorMessage(res.payload);
+      console.log(res.payload);
+    }
+    console.log(res);
   };
 
   return (
@@ -54,6 +87,7 @@ export default function LogIn() {
         <Typography component="h1" variant="h5">
           Log In
         </Typography>
+        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
         <form className={classes.form} noValidate>
           <TextField
             variant="outlined"
@@ -64,6 +98,7 @@ export default function LogIn() {
             label="Email Address"
             name="email"
             value={formState.email}
+            onChange={handleChange}
             autoComplete="email"
             autoFocus
           />
@@ -80,6 +115,25 @@ export default function LogIn() {
             onChange={handleChange}
             autoComplete="current-password"
           />
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel htmlFor="outlined-age-native-simple">
+              Select Account Type
+            </InputLabel>
+            <Select
+              native
+              value={formState.usertype}
+              onChange={handleChange}
+              label="usertype"
+              inputProps={{
+                name: "usertype",
+                id: "outlined-age-native-simple",
+              }}
+            >
+              <option aria-label="None" value="" />
+              <option value={"Admin"}>Admin</option>
+              <option value={"Customer"}>Customer</option>
+            </Select>
+          </FormControl>
           {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
