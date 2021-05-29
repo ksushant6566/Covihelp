@@ -32,7 +32,8 @@
     "react-swipeable-views": "^0.13.9",
     "react-uuid": "^1.0.2",
     "time-ago": "^0.2.1",
-    "timeago-react": "^3.0.2"
+    "timeago-react": "^3.0.2",
+    "worker-loader": "^3.0.8"
   },
   "scripts": {
     "start": "react-scripts start",
